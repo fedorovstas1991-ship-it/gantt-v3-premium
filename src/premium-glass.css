@@ -1,0 +1,412 @@
+/* 🎨 PREMIUM DESIGN v3.0 - Apple Style + Glassmorphism */
+
+/* ========= ЦВЕТОВАЯ СИСТЕМА ========= */
+:root {
+  /* Light Theme */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f7;
+  --bg-tertiary: #fafafa;
+  --bg-glass: rgba(255, 255, 255, 0.7);
+  --bg-glass-strong: rgba(255, 255, 255, 0.85);
+  
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary: #86868b;
+  
+  --border-primary: rgba(0, 0, 0, 0.08);
+  --border-secondary: rgba(0, 0, 0, 0.04);
+  
+  --accent-blue: #007aff;
+  --accent-blue-hover: #0051d5;
+  --accent-purple: #af52de;
+  --accent-green: #34c759;
+  --accent-orange: #ff9500;
+  --accent-red: #ff3b30;
+  
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 12px 40px rgba(0, 0, 0, 0.16);
+}
+
+/* Dark Theme */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #000000;
+    --bg-secondary: #1c1c1e;
+    --bg-tertiary: #2c2c2e;
+    --bg-glass: rgba(28, 28, 30, 0.7);
+    --bg-glass-strong: rgba(28, 28, 30, 0.85);
+    
+    --text-primary: #ffffff;
+    --text-secondary: #98989d;
+    --text-tertiary: #6e6e73;
+    
+    --border-primary: rgba(255, 255, 255, 0.12);
+    --border-secondary: rgba(255, 255, 255, 0.06);
+    
+    --accent-blue: #0a84ff;
+    --accent-blue-hover: #409cff;
+    --accent-purple: #bf5af2;
+    --accent-green: #30d158;
+    --accent-orange: #ff9f0a;
+    --accent-red: #ff453a;
+    
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 12px 40px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* ========= БАЗОВЫЕ СТИЛИ ========= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 
+    'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 15px;
+  line-height: 1.5;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.app-container {
+  min-height: 100vh;
+  background: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========= GLASSMORPHISM HEADER ========= */
+.float-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: var(--bg-glass);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--border-primary);
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.app-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  font-size: 26px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.header-stats {
+  display: flex;
+  gap: 20px;
+  padding-left: 32px;
+  border-left: 1px solid var(--border-secondary);
+}
+
+.stat-item {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: -0.2px;
+}
+
+/* ========= PREMIUM КНОПКИ ========= */
+.btn-add {
+  background: var(--accent-blue);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+  letter-spacing: -0.2px;
+}
+
+.btn-add:hover {
+  background: var(--accent-blue-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-add:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-icon {
+  font-size: 18px;
+  font-weight: 400;
+}
+
+/* ========= CONTROL PANEL С GLASSMORPHISM ========= */
+.control-panel {
+  background: var(--bg-glass);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--border-primary);
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 60px;
+  z-index: 999;
+}
+
+/* Переключатель режимов (Pill Style) */
+.view-switcher {
+  display: flex;
+  gap: 6px;
+  background: var(--bg-tertiary);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid var(--border-secondary);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.view-btn {
+  padding: 8px 20px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 9px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  letter-spacing: -0.3px;
+  position: relative;
+}
+
+.view-btn:hover:not(.active) {
+  color: var(--text-primary);
+  background: var(--bg-glass);
+}
+
+.view-btn.active {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.view-icon {
+  font-size: 16px;
+  filter: grayscale(0);
+}
+
+/* Zoom Controls */
+.zoom-controls {
+  display: flex;
+  gap: 6px;
+  background: var(--bg-tertiary);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid var(--border-secondary);
+}
+
+.zoom-btn {
+  padding: 8px 18px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 9px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: -0.2px;
+}
+
+.zoom-btn:hover:not(.active) {
+  color: var(--text-primary);
+  background: var(--bg-glass);
+}
+
+.zoom-btn.active {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ========= GANTT КОНТЕЙНЕР С GLASS ========= */
+.gantt-wrapper {
+  flex: 1;
+  background: var(--bg-primary);
+  margin: 20px 24px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  padding: 24px;
+  border: 1px solid var(--border-primary);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: all 0.3s ease;
+}
+
+.gantt-wrapper:hover {
+  box-shadow: var(--shadow-xl);
+  border-color: var(--border-secondary);
+}
+
+/* ========= HINT С GLASSMORPHISM ========= */
+.float-hint {
+  background: var(--bg-glass-strong);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  padding: 14px 20px;
+  margin: 0 24px 24px 24px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  box-shadow: var(--shadow-sm);
+  letter-spacing: -0.2px;
+}
+
+.float-hint strong {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ========= АНИМАЦИИ ========= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.app-container > * {
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========= УЛУЧШЕННЫЙ СКРОЛЛБАР ========= */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-tertiary);
+  border-radius: 8px;
+  border: 3px solid var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* ========= RESPONSIVE ========= */
+@media (max-width: 1024px) {
+  .float-header {
+    padding: 10px 16px;
+  }
+  
+  .app-title {
+    font-size: 18px;
+  }
+  
+  .header-stats {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .control-panel {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  
+  .view-switcher,
+  .zoom-controls {
+    width: 100%;
+    justify-content: stretch;
+  }
+  
+  .view-btn,
+  .zoom-btn {
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .gantt-wrapper {
+    margin: 12px;
+    padding: 16px;
+    border-radius: 12px;
+  }
+}
+
+/* ========= DARK MODE ПЛАВНОСТЬ ========= */
+* {
+  transition: background-color 0.3s ease, 
+              color 0.3s ease, 
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+}
+
+button, .view-btn, .zoom-btn {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
