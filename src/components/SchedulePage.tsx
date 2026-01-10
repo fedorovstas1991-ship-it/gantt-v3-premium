@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { Gantt, Task, ViewMode } from 'gantt-task-react'
 import { Users, FolderKanban, Calendar, Plus } from 'lucide-react'
 import { PersonCard } from './PersonCard'
-import { FilterPanel, Filters } from './FilterPanel'
+import { FilterDropdown, Filters } from './FilterDropdown'
 import { ProjectModal, NewProject } from './ProjectModal'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import 'gantt-task-react/dist/index.css'
@@ -209,11 +209,33 @@ function applyFilters(teams: TeamData[], filters: Filters): TeamData[] {
   }).filter(team => team.executors.length > 0)
 }
 
-// 🎨 Конвертация в Gantt формат
+// 🎨 Конвертация в Gantt формат - плоский список проектов
 function convertToGanttTasks(teams: TeamData[], viewType: ViewType): Task[] {
   const tasks: Task[] = []
 
-  if (viewType === 'teams') {
+  // Плоский список: только проекты без группировки
+  teams.forEach(team => {
+    team.executors.forEach(executor => {
+      executor.projects.forEach((proj, idx) => {
+        tasks.push({
+          start: proj.start,
+          end: proj.end,
+          name: `${executor.name} - ${proj.projectName}`,
+          id: `${executor.id}-proj-${idx}`,
+          type: 'task',
+          progress: Math.round((proj.hc / 1.0) * 100),
+          styles: {
+            backgroundColor: proj.color,
+            progressColor: proj.color,
+            backgroundSelectedColor: proj.color
+          }
+        })
+      })
+    })
+  })
+
+  // Старый код с группировкой (убираем)
+  if (false && viewType === 'teams') {
     teams.forEach(team => {
       tasks.push({
         start: new Date(2026, 0, 1),
@@ -265,7 +287,7 @@ function convertToGanttTasks(teams: TeamData[], viewType: ViewType): Task[] {
         })
       })
     })
-  } else {
+  } else if (false) {
     const projectsMap = new Map<string, { name: string, color: string, teams: Map<string, ExecutorData[]> }>()
 
     teams.forEach(team => {
@@ -504,8 +526,8 @@ export function SchedulePage() {
         </button>
       </div>
 
-      {/* Панель фильтров */}
-      <FilterPanel
+      {/* Компактные фильтры */}
+      <FilterDropdown
         filters={filters}
         onFiltersChange={setFilters}
         teams={teamsList}
@@ -566,16 +588,21 @@ export function SchedulePage() {
 
           {/* Gantt График */}
           <div className="gantt-container">
-            <Gantt
-              tasks={tasks}
-              viewMode={viewMode}
-              onDateChange={handleTaskChange}
-              listCellWidth="0px"
-              columnWidth={columnWidth}
-              locale="ru"
-              barBackgroundColor="transparent"
-              barProgressColor="transparent"
-            />
+            {tasks.length > 0 ? (
+              <Gantt
+                tasks={tasks}
+                viewMode={viewMode}
+                onDateChange={handleTaskChange}
+                listCellWidth="0px"
+                columnWidth={columnWidth}
+                locale="ru"
+              />
+            ) : (
+              <div className="gantt-empty-state">
+                <p>Нет проектов для отображения</p>
+                <span>Попробуйте изменить фильтры</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
