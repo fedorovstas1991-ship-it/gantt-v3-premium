@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { Gantt, Task, ViewMode } from 'gantt-task-react'
 import { Users, FolderKanban, Calendar, Plus } from 'lucide-react'
 import { PersonCard } from './PersonCard'
-import { FilterPanel, Filters } from './FilterPanel'
+import { FilterDropdown, Filters } from './FilterDropdown'
 import { ProjectModal, NewProject } from './ProjectModal'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import 'gantt-task-react/dist/index.css'
@@ -526,8 +526,8 @@ export function SchedulePage() {
         </button>
       </div>
 
-      {/* Панель фильтров */}
-      <FilterPanel
+      {/* Компактные фильтры */}
+      <FilterDropdown
         filters={filters}
         onFiltersChange={setFilters}
         teams={teamsList}
