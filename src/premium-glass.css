@@ -292,8 +292,13 @@ body {
 
 /* ========= SCHEDULE PAGE ========= */
 .schedule-page {
-  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
   max-width: 100%;
+  overflow: hidden;
+  padding: 24px;
+  box-sizing: border-box;
 }
 
 .page-header {
@@ -302,6 +307,7 @@ body {
   align-items: flex-start;
   margin-bottom: 24px;
   gap: 20px;
+  flex-shrink: 0;
 }
 
 .header-content h1 {
@@ -781,6 +787,7 @@ button,
   padding: 20px;
   margin-bottom: 20px;
   box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
 }
 
 .filter-header {
@@ -1145,8 +1152,9 @@ button,
 .schedule-split-layout {
   display: flex;
   gap: 0;
-  height: calc(100vh - 200px);
+  flex: 1;
   overflow: hidden;
+  min-height: 0;
 }
 
 /* Левая панель - карточки людей */
