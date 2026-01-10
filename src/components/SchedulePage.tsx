@@ -373,8 +373,43 @@ export function SchedulePage() {
   const tasks = useMemo(() => convertToGanttTasks(filteredTeams, 'teams'), [filteredTeams])
 
   const handleTaskChange = (task: Task) => {
-    // Обновление tasks при drag&drop (будет в БЛОКЕ 3)
-    console.log('Task changed:', task)
+    // Обновление дат проекта при drag&drop (горизонтальное перемещение)
+    // Примечание: gantt-task-react поддерживает изменение дат, но не поддерживает
+    // нативное перемещение задач между строками (reassignment)
+    // task.id имеет формат: "{executorId}-proj-{idx}"
+    const taskIdParts = task.id.split('-')
+
+    // Проверяем, что это задача проекта (а не team или exec)
+    if (taskIdParts.includes('proj')) {
+      const projIndex = taskIdParts.indexOf('proj')
+      const executorId = taskIdParts.slice(0, projIndex).join('-')
+      const projectIdx = parseInt(taskIdParts[projIndex + 1])
+
+      setTeams(prevTeams => {
+        return prevTeams.map(team => {
+          return {
+            ...team,
+            executors: team.executors.map(executor => {
+              if (executor.id === executorId) {
+                const updatedProjects = [...executor.projects]
+                if (updatedProjects[projectIdx]) {
+                  updatedProjects[projectIdx] = {
+                    ...updatedProjects[projectIdx],
+                    start: task.start,
+                    end: task.end
+                  }
+                }
+                return {
+                  ...executor,
+                  projects: updatedProjects
+                }
+              }
+              return executor
+            })
+          }
+        })
+      })
+    }
   }
 
   const handleAddPerson = () => {
@@ -529,6 +564,8 @@ export function SchedulePage() {
               listCellWidth="0px"
               columnWidth={columnWidth}
               locale="ru"
+              barBackgroundColor="transparent"
+              barProgressColor="transparent"
             />
           </div>
         </div>
