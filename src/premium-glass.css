@@ -1432,6 +1432,7 @@ button,
   border-bottom: 1px solid var(--border-primary);
   transition: background-color 0.2s ease;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .person-card:hover {
