@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Gantt, Task, ViewMode } from 'gantt-task-react'
 import { Users, FolderKanban, Calendar, Plus } from 'lucide-react'
 import { PersonCard } from './PersonCard'
+import { FilterPanel, Filters } from './FilterPanel'
+import { ProjectModal, NewProject } from './ProjectModal'
+import { useLocalStorage } from '../hooks/useLocalStorage'
 import 'gantt-task-react/dist/index.css'
 
 // 🎯 Типы данных
@@ -162,6 +165,50 @@ const mockTeams: TeamData[] = [
   }
 ]
 
+// 🔍 Применение фильтров (паттерн Plane - real-time)
+function applyFilters(teams: TeamData[], filters: Filters): TeamData[] {
+  return teams.map(team => {
+    // Фильтр по командам
+    if (filters.teams.length > 0 && !filters.teams.includes(team.id)) {
+      return { ...team, executors: [] }
+    }
+
+    const filteredExecutors = team.executors
+      .filter(executor => {
+        // Фильтр по людям
+        if (filters.people.length > 0 && !filters.people.includes(executor.id)) {
+          return false
+        }
+        return true
+      })
+      .map(executor => {
+        const filteredProjects = executor.projects.filter(project => {
+          // Фильтр по названию проекта
+          if (filters.projectName && !project.projectName.toLowerCase().includes(filters.projectName.toLowerCase())) {
+            return false
+          }
+
+          // Фильтр по датам
+          if (filters.dateFrom) {
+            const dateFrom = new Date(filters.dateFrom)
+            if (project.end < dateFrom) return false
+          }
+          if (filters.dateTo) {
+            const dateTo = new Date(filters.dateTo)
+            if (project.start > dateTo) return false
+          }
+
+          return true
+        })
+
+        return { ...executor, projects: filteredProjects }
+      })
+      .filter(executor => executor.projects.length > 0)
+
+    return { ...team, executors: filteredExecutors }
+  }).filter(team => team.executors.length > 0)
+}
+
 // 🎨 Конвертация в Gantt формат
 function convertToGanttTasks(teams: TeamData[], viewType: ViewType): Task[] {
   const tasks: Task[] = []
@@ -303,22 +350,130 @@ function convertToGanttTasks(teams: TeamData[], viewType: ViewType): Task[] {
 export function SchedulePage() {
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Month)
   const [columnWidth, setColumnWidth] = useState<number>(70)
-  const [teams] = useState<TeamData[]>(mockTeams)
-  const [tasks, setTasks] = useState<Task[]>(convertToGanttTasks(mockTeams, 'teams'))
+  const [teams, setTeams] = useState<TeamData[]>(mockTeams)
+
+  // Фильтры с сохранением в localStorage (паттерн Plane)
+  const [filters, setFilters] = useLocalStorage<Filters>('gantt-filters', {
+    teams: [],
+    people: [],
+    projectName: '',
+    dateFrom: '',
+    dateTo: ''
+  })
+
+  // Состояние модального окна создания проекта
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedExecutorId, setSelectedExecutorId] = useState<string | undefined>()
+  const [modalInitialDates, setModalInitialDates] = useState<{ start?: Date; end?: Date }>({})
+
+  // Real-time фильтрация (useMemo для оптимизации)
+  const filteredTeams = useMemo(() => applyFilters(teams, filters), [teams, filters])
+
+  // Преобразование в Gantt tasks
+  const tasks = useMemo(() => convertToGanttTasks(filteredTeams, 'teams'), [filteredTeams])
 
   const handleTaskChange = (task: Task) => {
-    setTasks(prevTasks =>
-      prevTasks.map(t => t.id === task.id ? task : t)
-    )
+    // Обновление дат проекта при drag&drop (горизонтальное перемещение)
+    // Примечание: gantt-task-react поддерживает изменение дат, но не поддерживает
+    // нативное перемещение задач между строками (reassignment)
+    // task.id имеет формат: "{executorId}-proj-{idx}"
+    const taskIdParts = task.id.split('-')
+
+    // Проверяем, что это задача проекта (а не team или exec)
+    if (taskIdParts.includes('proj')) {
+      const projIndex = taskIdParts.indexOf('proj')
+      const executorId = taskIdParts.slice(0, projIndex).join('-')
+      const projectIdx = parseInt(taskIdParts[projIndex + 1])
+
+      setTeams(prevTeams => {
+        return prevTeams.map(team => {
+          return {
+            ...team,
+            executors: team.executors.map(executor => {
+              if (executor.id === executorId) {
+                const updatedProjects = [...executor.projects]
+                if (updatedProjects[projectIdx]) {
+                  updatedProjects[projectIdx] = {
+                    ...updatedProjects[projectIdx],
+                    start: task.start,
+                    end: task.end
+                  }
+                }
+                return {
+                  ...executor,
+                  projects: updatedProjects
+                }
+              }
+              return executor
+            })
+          }
+        })
+      })
+    }
   }
 
   const handleAddPerson = () => {
     alert('🎉 Добавление нового человека\n\n(В следующей версии с backend)')
   }
 
-  const totalExecutors = teams.reduce((sum, t) => sum + t.executors.length, 0)
+  // Открыть модальное окно для создания проекта
+  const handleOpenProjectModal = (executorId: string, startDate?: Date, endDate?: Date) => {
+    setSelectedExecutorId(executorId)
+    setModalInitialDates({ start: startDate, end: endDate })
+    setIsModalOpen(true)
+  }
+
+  // Сохранить новый проект
+  const handleSaveProject = (newProject: NewProject) => {
+    if (!selectedExecutorId) return
+
+    setTeams(prevTeams => {
+      return prevTeams.map(team => {
+        return {
+          ...team,
+          executors: team.executors.map(executor => {
+            if (executor.id === selectedExecutorId) {
+              return {
+                ...executor,
+                projects: [
+                  ...executor.projects,
+                  {
+                    projectId: `proj-${Date.now()}`,
+                    projectName: newProject.projectName,
+                    start: newProject.start,
+                    end: newProject.end,
+                    hc: newProject.hc,
+                    color: newProject.color
+                  }
+                ]
+              }
+            }
+            return executor
+          })
+        }
+      })
+    })
+
+    setIsModalOpen(false)
+    setSelectedExecutorId(undefined)
+    setModalInitialDates({})
+  }
+
+  // Фильтрация по одному человеку (клик на индикатор утилизации)
+  const handleFilterByPerson = (personId: string) => {
+    setFilters(prev => ({
+      ...prev,
+      people: [personId]
+    }))
+  }
+
+  // Подготовка данных для FilterPanel
+  const teamsList = teams.map(t => ({ id: t.id, name: t.name }))
+  const peopleList = teams.flatMap(t => t.executors.map(e => ({ id: e.id, name: e.name })))
+
+  const totalExecutors = filteredTeams.reduce((sum, t) => sum + t.executors.length, 0)
   const totalProjects = new Set(
-    teams.flatMap(t => t.executors.flatMap(e => e.projects.map(p => p.projectId)))
+    filteredTeams.flatMap(t => t.executors.flatMap(e => e.projects.map(p => p.projectId)))
   ).size
 
   return (
@@ -349,6 +504,14 @@ export function SchedulePage() {
         </button>
       </div>
 
+      {/* Панель фильтров */}
+      <FilterPanel
+        filters={filters}
+        onFiltersChange={setFilters}
+        teams={teamsList}
+        people={peopleList}
+      />
+
       {/* Split Layout: Карточки слева + Gantt справа */}
       <div className="schedule-split-layout">
         {/* Левая панель - карточки людей */}
@@ -360,6 +523,8 @@ export function SchedulePage() {
                   key={executor.id}
                   executor={executor}
                   team={team}
+                  onClick={() => handleOpenProjectModal(executor.id, new Date(2026, 0, 10), new Date(2026, 2, 10))}
+                  onUtilizationClick={() => handleFilterByPerson(executor.id)}
                 />
               ))
             )}
@@ -408,10 +573,27 @@ export function SchedulePage() {
               listCellWidth="0px"
               columnWidth={columnWidth}
               locale="ru"
+              barBackgroundColor="transparent"
+              barProgressColor="transparent"
             />
           </div>
         </div>
       </div>
+
+      {/* Модальное окно создания проекта */}
+      <ProjectModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveProject}
+        executorId={selectedExecutorId}
+        executorName={
+          selectedExecutorId
+            ? teams.flatMap(t => t.executors).find(e => e.id === selectedExecutorId)?.name
+            : undefined
+        }
+        initialStartDate={modalInitialDates.start}
+        initialEndDate={modalInitialDates.end}
+      />
     </div>
   )
 }
