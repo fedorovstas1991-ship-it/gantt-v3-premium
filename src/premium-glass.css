@@ -701,3 +701,73 @@ button,
 .theme-option {
   transition: all 0.2s ease;
 }
+
+/* ========= DARK THEME GANTT OVERRIDES ========= */
+/* Переопределяем стили библиотеки gantt-task-react для темной темы */
+
+[data-theme="dark"] {
+  /* Светлый фон для строк таблицы слева */
+  ._34SS0 {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* Убираем чередование для четных строк */
+  ._34SS0:nth-of-type(even) {
+    background-color: #f8f9fa !important;
+  }
+
+  /* Светлый фон для строк SVG диаграммы */
+  ._2dZTy {
+    fill: #ffffff !important;
+  }
+
+  ._2dZTy:nth-child(even) {
+    fill: #f8f9fa !important;
+  }
+
+  /* Темный фон для header таблицы */
+  ._3ZbQT {
+    background-color: var(--bg-primary) !important;
+    border-color: var(--border-primary) !important;
+  }
+
+  ._3_ygE {
+    background-color: var(--bg-primary) !important;
+    border-color: var(--border-primary) !important;
+  }
+
+  /* Темный текст для ячеек таблицы */
+  ._3lLk3 {
+    color: #000000 !important;
+  }
+
+  /* Линии сетки */
+  ._3rUKi {
+    stroke: var(--border-primary) !important;
+  }
+
+  ._RuwuK {
+    stroke: var(--border-primary) !important;
+  }
+
+  ._1rLuZ {
+    stroke: var(--border-primary) !important;
+  }
+
+  /* Текст на временной шкале */
+  ._9w8d5 {
+    fill: var(--text-primary) !important;
+  }
+
+  ._2q1Kt {
+    fill: var(--text-primary) !important;
+  }
+
+  /* Фон контейнера Gantt */
+  ._CZjuD {
+    background-color: var(--bg-primary) !important;
+  }
+
+  /* Цветные блоки задач НЕ ТРОГАЕМ - они управляются через styles в данных */
+}
