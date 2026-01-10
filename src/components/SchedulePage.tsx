@@ -459,6 +459,14 @@ export function SchedulePage() {
     setModalInitialDates({})
   }
 
+  // Фильтрация по одному человеку (клик на индикатор утилизации)
+  const handleFilterByPerson = (personId: string) => {
+    setFilters(prev => ({
+      ...prev,
+      people: [personId]
+    }))
+  }
+
   // Подготовка данных для FilterPanel
   const teamsList = teams.map(t => ({ id: t.id, name: t.name }))
   const peopleList = teams.flatMap(t => t.executors.map(e => ({ id: e.id, name: e.name })))
@@ -516,6 +524,7 @@ export function SchedulePage() {
                   executor={executor}
                   team={team}
                   onClick={() => handleOpenProjectModal(executor.id, new Date(2026, 0, 10), new Date(2026, 2, 10))}
+                  onUtilizationClick={() => handleFilterByPerson(executor.id)}
                 />
               ))
             )}

@@ -1247,6 +1247,54 @@ button,
   flex-shrink: 0;
 }
 
+/* Индикатор утилизации */
+.person-utilization {
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.person-utilization:hover {
+  background: var(--bg-tertiary);
+  transform: scale(1.02);
+}
+
+.utilization-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.utilization-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.utilization-value {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.utilization-bar-bg {
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.utilization-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
 /* Скрыть встроенную таблицу библиотеки gantt-task-react */
 .gantt-container ._3ZbQT {
   display: none !important;
