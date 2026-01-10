@@ -302,6 +302,7 @@ function convertToGanttTasks(teams: TeamData[], viewType: ViewType): Task[] {
 export function SchedulePage() {
   const [viewType, setViewType] = useState<ViewType>('teams')
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Month)
+  const [columnWidth, setColumnWidth] = useState<number>(70)
   const [teams] = useState<TeamData[]>(mockTeams)
   const [tasks, setTasks] = useState<Task[]>(convertToGanttTasks(mockTeams, 'teams'))
 
@@ -374,22 +375,31 @@ export function SchedulePage() {
 
         <div className="zoom-controls">
           <button
-            className={`zoom-btn ${viewMode === ViewMode.Day ? 'active' : ''}`}
-            onClick={() => setViewMode(ViewMode.Day)}
-          >
-            День
-          </button>
-          <button
             className={`zoom-btn ${viewMode === ViewMode.Week ? 'active' : ''}`}
-            onClick={() => setViewMode(ViewMode.Week)}
+            onClick={() => {
+              setViewMode(ViewMode.Week)
+              setColumnWidth(50)
+            }}
           >
             Неделя
           </button>
           <button
-            className={`zoom-btn ${viewMode === ViewMode.Month ? 'active' : ''}`}
-            onClick={() => setViewMode(ViewMode.Month)}
+            className={`zoom-btn ${viewMode === ViewMode.Month && columnWidth >= 50 ? 'active' : ''}`}
+            onClick={() => {
+              setViewMode(ViewMode.Month)
+              setColumnWidth(70)
+            }}
           >
             Месяц
+          </button>
+          <button
+            className={`zoom-btn ${viewMode === ViewMode.Month && columnWidth < 50 ? 'active' : ''}`}
+            onClick={() => {
+              setViewMode(ViewMode.Month)
+              setColumnWidth(30)
+            }}
+          >
+            Полугодие
           </button>
         </div>
       </div>
@@ -401,7 +411,7 @@ export function SchedulePage() {
           viewMode={viewMode}
           onDateChange={handleTaskChange}
           listCellWidth="240px"
-          columnWidth={viewMode === ViewMode.Month ? 70 : 50}
+          columnWidth={columnWidth}
           locale="ru"
         />
       </div>
