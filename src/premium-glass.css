@@ -292,8 +292,13 @@ body {
 
 /* ========= SCHEDULE PAGE ========= */
 .schedule-page {
-  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
   max-width: 100%;
+  overflow: hidden;
+  padding: 24px;
+  box-sizing: border-box;
 }
 
 .page-header {
@@ -302,6 +307,7 @@ body {
   align-items: flex-start;
   margin-bottom: 24px;
   gap: 20px;
+  flex-shrink: 0;
 }
 
 .header-content h1 {
@@ -706,24 +712,24 @@ button,
 /* Переопределяем стили библиотеки gantt-task-react для темной темы */
 
 [data-theme="dark"] {
-  /* Светлый фон для строк таблицы слева */
+  /* Темный фон для строк таблицы слева */
   ._34SS0 {
-    background-color: #ffffff !important;
-    color: #000000 !important;
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
   }
 
   /* Убираем чередование для четных строк */
   ._34SS0:nth-of-type(even) {
-    background-color: #f8f9fa !important;
+    background-color: var(--bg-secondary) !important;
   }
 
-  /* Светлый фон для строк SVG диаграммы */
+  /* Темный фон для строк SVG диаграммы */
   ._2dZTy {
-    fill: #ffffff !important;
+    fill: var(--bg-primary) !important;
   }
 
   ._2dZTy:nth-child(even) {
-    fill: #f8f9fa !important;
+    fill: var(--bg-secondary) !important;
   }
 
   /* Темный фон для header таблицы */
@@ -739,7 +745,7 @@ button,
 
   /* Темный текст для ячеек таблицы */
   ._3lLk3 {
-    color: #000000 !important;
+    color: var(--text-primary) !important;
   }
 
   /* Линии сетки */
@@ -772,7 +778,211 @@ button,
   /* Цветные блоки задач НЕ ТРОГАЕМ - они управляются через styles в данных */
 }
 
-/* ========= FILTER PANEL ========= */
+/* ========= FILTER DROPDOWN ========= */
+
+.filter-dropdown-wrapper {
+  position: relative;
+  flex-shrink: 0;
+  margin-bottom: 20px;
+}
+
+.filter-dropdown-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-dropdown-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-hover);
+}
+
+.filter-dropdown-btn.active {
+  background: var(--bg-active);
+  border-color: var(--accent-blue);
+}
+
+.filter-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  background: var(--accent-blue);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 9px;
+}
+
+.filter-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 280px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  box-shadow: var(--shadow-xl);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.filter-dropdown-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid var(--border-secondary);
+}
+
+.filter-dropdown-search svg {
+  color: var(--text-tertiary);
+}
+
+.filter-search-input {
+  flex: 1;
+  padding: 6px 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.filter-search-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+}
+
+.filter-categories {
+  padding: 4px;
+}
+
+.filter-category-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.filter-category-item:hover {
+  background: var(--bg-hover);
+}
+
+.filter-submenu {
+  position: absolute;
+  left: calc(100% + 4px);
+  top: 0;
+  min-width: 240px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+  z-index: 1001;
+}
+
+.filter-submenu-operators {
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+  border-bottom: 1px solid var(--border-secondary);
+}
+
+.operator-btn {
+  flex: 1;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.operator-btn:hover {
+  background: var(--bg-hover);
+}
+
+.operator-btn.active {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: white;
+}
+
+.filter-submenu-options {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.filter-option:hover {
+  background: var(--bg-hover);
+}
+
+.filter-option input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--accent-blue);
+}
+
+.filter-dropdown-footer {
+  padding: 8px 12px;
+  border-top: 1px solid var(--border-secondary);
+}
+
+.btn-clear-all {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-clear-all:hover {
+  background: var(--bg-hover);
+  color: var(--accent-red);
+}
+
+/* ========= OLD FILTER PANEL (DEPRECATED) ========= */
 
 .filter-panel {
   background: var(--bg-primary);
@@ -781,6 +991,8 @@ button,
   padding: 20px;
   margin-bottom: 20px;
   box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+  display: none; /* Hide old panel */
 }
 
 .filter-header {
@@ -1145,8 +1357,9 @@ button,
 .schedule-split-layout {
   display: flex;
   gap: 0;
-  height: calc(100vh - 200px);
+  flex: 1;
   overflow: hidden;
+  min-height: 0;
 }
 
 /* Левая панель - карточки людей */
@@ -1185,6 +1398,28 @@ button,
   flex: 1;
   overflow: auto;
   position: relative;
+}
+
+.gantt-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px;
+  text-align: center;
+}
+
+.gantt-empty-state p {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.gantt-empty-state span {
+  font-size: 14px;
+  color: var(--text-secondary);
 }
 
 /* ========= PERSON CARD ========= */
