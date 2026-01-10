@@ -182,7 +182,7 @@ function applyFilters(teams: TeamData[], filters: Filters): TeamData[] {
         return true
       })
       .map(executor => {
-        const filteredProjects = executor.projects.filter(project => {
+        const filteredProjects = (executor.projects || []).filter(project => {
           // Фильтр по ID проектов
           if (filters.projects.length > 0 && !filters.projects.includes(project.projectId)) {
             return false
@@ -208,7 +208,7 @@ function applyFilters(teams: TeamData[], filters: Filters): TeamData[] {
 
         return { ...executor, projects: filteredProjects }
       })
-      .filter(executor => executor.projects.length > 0)
+      .filter(executor => (executor.projects || []).length > 0)
 
     return { ...team, executors: filteredExecutors }
   }).filter(team => team.executors.length > 0)
