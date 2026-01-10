@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { Gantt, Task, ViewMode } from 'gantt-task-react'
 import { Users, FolderKanban, Calendar, Plus } from 'lucide-react'
+import { PersonCard } from './PersonCard'
 import 'gantt-task-react/dist/index.css'
 
 // 🎯 Типы данных
-type ViewType = 'projects' | 'teams'
+type ViewType = 'projects' | 'teams' // Оставляем для будущего функционала
 
 interface TeamData {
   id: string
@@ -300,16 +301,10 @@ function convertToGanttTasks(teams: TeamData[], viewType: ViewType): Task[] {
 }
 
 export function SchedulePage() {
-  const [viewType, setViewType] = useState<ViewType>('teams')
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Month)
   const [columnWidth, setColumnWidth] = useState<number>(70)
   const [teams] = useState<TeamData[]>(mockTeams)
   const [tasks, setTasks] = useState<Task[]>(convertToGanttTasks(mockTeams, 'teams'))
-
-  const handleViewTypeChange = (type: ViewType) => {
-    setViewType(type)
-    setTasks(convertToGanttTasks(teams, type))
-  }
 
   const handleTaskChange = (task: Task) => {
     setTasks(prevTasks =>
@@ -354,66 +349,68 @@ export function SchedulePage() {
         </button>
       </div>
 
-      {/* Панель управления */}
-      <div className="control-panel">
-        <div className="view-switcher">
-          <button
-            className={`view-btn ${viewType === 'teams' ? 'active' : ''}`}
-            onClick={() => handleViewTypeChange('teams')}
-          >
-            <Users size={18} />
-            <span>По командам</span>
-          </button>
-          <button
-            className={`view-btn ${viewType === 'projects' ? 'active' : ''}`}
-            onClick={() => handleViewTypeChange('projects')}
-          >
-            <FolderKanban size={18} />
-            <span>По проектам</span>
-          </button>
+      {/* Split Layout: Карточки слева + Gantt справа */}
+      <div className="schedule-split-layout">
+        {/* Левая панель - карточки людей */}
+        <div className="people-cards-panel">
+          <div className="cards-list">
+            {teams.map(team =>
+              team.executors.map(executor => (
+                <PersonCard
+                  key={executor.id}
+                  executor={executor}
+                  team={team}
+                />
+              ))
+            )}
+          </div>
         </div>
 
-        <div className="zoom-controls">
-          <button
-            className={`zoom-btn ${viewMode === ViewMode.Week ? 'active' : ''}`}
-            onClick={() => {
-              setViewMode(ViewMode.Week)
-              setColumnWidth(50)
-            }}
-          >
-            Неделя
-          </button>
-          <button
-            className={`zoom-btn ${viewMode === ViewMode.Month && columnWidth >= 50 ? 'active' : ''}`}
-            onClick={() => {
-              setViewMode(ViewMode.Month)
-              setColumnWidth(70)
-            }}
-          >
-            Месяц
-          </button>
-          <button
-            className={`zoom-btn ${viewMode === ViewMode.Month && columnWidth < 50 ? 'active' : ''}`}
-            onClick={() => {
-              setViewMode(ViewMode.Month)
-              setColumnWidth(30)
-            }}
-          >
-            Полугодие
-          </button>
-        </div>
-      </div>
+        {/* Правая панель - Gantt диаграмма */}
+        <div className="gantt-panel">
+          {/* Кнопки масштаба НАД диаграммой */}
+          <div className="gantt-zoom-controls">
+            <button
+              className={`zoom-btn ${viewMode === ViewMode.Week ? 'active' : ''}`}
+              onClick={() => {
+                setViewMode(ViewMode.Week)
+                setColumnWidth(50)
+              }}
+            >
+              Неделя
+            </button>
+            <button
+              className={`zoom-btn ${viewMode === ViewMode.Month && columnWidth >= 50 ? 'active' : ''}`}
+              onClick={() => {
+                setViewMode(ViewMode.Month)
+                setColumnWidth(70)
+              }}
+            >
+              Месяц
+            </button>
+            <button
+              className={`zoom-btn ${viewMode === ViewMode.Month && columnWidth < 50 ? 'active' : ''}`}
+              onClick={() => {
+                setViewMode(ViewMode.Month)
+                setColumnWidth(30)
+              }}
+            >
+              Полугодие
+            </button>
+          </div>
 
-      {/* Gantt График */}
-      <div className="gantt-container">
-        <Gantt
-          tasks={tasks}
-          viewMode={viewMode}
-          onDateChange={handleTaskChange}
-          listCellWidth="240px"
-          columnWidth={columnWidth}
-          locale="ru"
-        />
+          {/* Gantt График */}
+          <div className="gantt-container">
+            <Gantt
+              tasks={tasks}
+              viewMode={viewMode}
+              onDateChange={handleTaskChange}
+              listCellWidth="0px"
+              columnWidth={columnWidth}
+              locale="ru"
+            />
+          </div>
+        </div>
       </div>
     </div>
   )
