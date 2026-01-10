@@ -596,8 +596,6 @@ export function SchedulePage() {
                 listCellWidth="0px"
                 columnWidth={columnWidth}
                 locale="ru"
-                barBackgroundColor="transparent"
-                barProgressColor="transparent"
               />
             ) : (
               <div className="gantt-empty-state">
