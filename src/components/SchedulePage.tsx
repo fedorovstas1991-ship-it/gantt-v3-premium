@@ -566,16 +566,23 @@ export function SchedulePage() {
 
           {/* Gantt График */}
           <div className="gantt-container">
-            <Gantt
-              tasks={tasks}
-              viewMode={viewMode}
-              onDateChange={handleTaskChange}
-              listCellWidth="0px"
-              columnWidth={columnWidth}
-              locale="ru"
-              barBackgroundColor="transparent"
-              barProgressColor="transparent"
-            />
+            {tasks.length > 0 ? (
+              <Gantt
+                tasks={tasks}
+                viewMode={viewMode}
+                onDateChange={handleTaskChange}
+                listCellWidth="0px"
+                columnWidth={columnWidth}
+                locale="ru"
+                barBackgroundColor="transparent"
+                barProgressColor="transparent"
+              />
+            ) : (
+              <div className="gantt-empty-state">
+                <p>Нет проектов для отображения</p>
+                <span>Попробуйте изменить фильтры</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
