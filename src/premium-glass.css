@@ -712,24 +712,24 @@ button,
 /* Переопределяем стили библиотеки gantt-task-react для темной темы */
 
 [data-theme="dark"] {
-  /* Светлый фон для строк таблицы слева */
+  /* Темный фон для строк таблицы слева */
   ._34SS0 {
-    background-color: #ffffff !important;
-    color: #000000 !important;
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
   }
 
   /* Убираем чередование для четных строк */
   ._34SS0:nth-of-type(even) {
-    background-color: #f8f9fa !important;
+    background-color: var(--bg-secondary) !important;
   }
 
-  /* Светлый фон для строк SVG диаграммы */
+  /* Темный фон для строк SVG диаграммы */
   ._2dZTy {
-    fill: #ffffff !important;
+    fill: var(--bg-primary) !important;
   }
 
   ._2dZTy:nth-child(even) {
-    fill: #f8f9fa !important;
+    fill: var(--bg-secondary) !important;
   }
 
   /* Темный фон для header таблицы */
@@ -745,7 +745,7 @@ button,
 
   /* Темный текст для ячеек таблицы */
   ._3lLk3 {
-    color: #000000 !important;
+    color: var(--text-primary) !important;
   }
 
   /* Линии сетки */
