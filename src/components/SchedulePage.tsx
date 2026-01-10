@@ -579,7 +579,7 @@ export function SchedulePage() {
               className={`zoom-btn ${viewMode === ViewMode.Month && columnWidth < 50 ? 'active' : ''}`}
               onClick={() => {
                 setViewMode(ViewMode.Month)
-                setColumnWidth(30)
+                setColumnWidth(60)
               }}
             >
               Полугодие
