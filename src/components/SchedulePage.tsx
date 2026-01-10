@@ -3,6 +3,7 @@ import { Gantt, Task, ViewMode } from 'gantt-task-react'
 import { Users, FolderKanban, Calendar, Plus } from 'lucide-react'
 import { PersonCard } from './PersonCard'
 import { FilterPanel, Filters } from './FilterPanel'
+import { ProjectModal, NewProject } from './ProjectModal'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import 'gantt-task-react/dist/index.css'
 
@@ -349,7 +350,7 @@ function convertToGanttTasks(teams: TeamData[], viewType: ViewType): Task[] {
 export function SchedulePage() {
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Month)
   const [columnWidth, setColumnWidth] = useState<number>(70)
-  const [teams] = useState<TeamData[]>(mockTeams)
+  const [teams, setTeams] = useState<TeamData[]>(mockTeams)
 
   // Фильтры с сохранением в localStorage (паттерн Plane)
   const [filters, setFilters] = useLocalStorage<Filters>('gantt-filters', {
@@ -359,6 +360,11 @@ export function SchedulePage() {
     dateFrom: '',
     dateTo: ''
   })
+
+  // Состояние модального окна создания проекта
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedExecutorId, setSelectedExecutorId] = useState<string | undefined>()
+  const [modalInitialDates, setModalInitialDates] = useState<{ start?: Date; end?: Date }>({})
 
   // Real-time фильтрация (useMemo для оптимизации)
   const filteredTeams = useMemo(() => applyFilters(teams, filters), [teams, filters])
@@ -373,6 +379,49 @@ export function SchedulePage() {
 
   const handleAddPerson = () => {
     alert('🎉 Добавление нового человека\n\n(В следующей версии с backend)')
+  }
+
+  // Открыть модальное окно для создания проекта
+  const handleOpenProjectModal = (executorId: string, startDate?: Date, endDate?: Date) => {
+    setSelectedExecutorId(executorId)
+    setModalInitialDates({ start: startDate, end: endDate })
+    setIsModalOpen(true)
+  }
+
+  // Сохранить новый проект
+  const handleSaveProject = (newProject: NewProject) => {
+    if (!selectedExecutorId) return
+
+    setTeams(prevTeams => {
+      return prevTeams.map(team => {
+        return {
+          ...team,
+          executors: team.executors.map(executor => {
+            if (executor.id === selectedExecutorId) {
+              return {
+                ...executor,
+                projects: [
+                  ...executor.projects,
+                  {
+                    projectId: `proj-${Date.now()}`,
+                    projectName: newProject.projectName,
+                    start: newProject.start,
+                    end: newProject.end,
+                    hc: newProject.hc,
+                    color: newProject.color
+                  }
+                ]
+              }
+            }
+            return executor
+          })
+        }
+      })
+    })
+
+    setIsModalOpen(false)
+    setSelectedExecutorId(undefined)
+    setModalInitialDates({})
   }
 
   // Подготовка данных для FilterPanel
@@ -431,6 +480,7 @@ export function SchedulePage() {
                   key={executor.id}
                   executor={executor}
                   team={team}
+                  onClick={() => handleOpenProjectModal(executor.id, new Date(2026, 0, 10), new Date(2026, 2, 10))}
                 />
               ))
             )}
@@ -483,6 +533,21 @@ export function SchedulePage() {
           </div>
         </div>
       </div>
+
+      {/* Модальное окно создания проекта */}
+      <ProjectModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveProject}
+        executorId={selectedExecutorId}
+        executorName={
+          selectedExecutorId
+            ? teams.flatMap(t => t.executors).find(e => e.id === selectedExecutorId)?.name
+            : undefined
+        }
+        initialStartDate={modalInitialDates.start}
+        initialEndDate={modalInitialDates.end}
+      />
     </div>
   )
 }

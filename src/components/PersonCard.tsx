@@ -19,6 +19,7 @@ interface TeamData {
 interface PersonCardProps {
   executor: ExecutorData
   team: TeamData
+  onClick?: () => void
 }
 
 function getInitials(name: string): string {
@@ -43,12 +44,12 @@ function formatDate(date: Date | null): string {
   return date.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short' })
 }
 
-export function PersonCard({ executor, team }: PersonCardProps) {
+export function PersonCard({ executor, team, onClick }: PersonCardProps) {
   const { start, end } = getDateRange(executor)
   const totalHours = getTotalHours(executor)
 
   return (
-    <div className="person-card">
+    <div className="person-card" onClick={onClick}>
       <div className="person-card-header">
         <div className="person-avatar" style={{ backgroundColor: team.color }}>
           {getInitials(executor.name)}
