@@ -229,7 +229,7 @@ function convertToGanttTasks(teams: TeamData[], viewType: ViewType): Task[] {
         tasks.push({
           start: proj.start,
           end: proj.end,
-          name: `${executor.name} - ${proj.projectName}`,
+          name: proj.projectName,
           id: `${executor.id}-proj-${idx}`,
           type: 'task',
           progress: Math.round((proj.hc / 1.0) * 100),
@@ -508,8 +508,8 @@ export function SchedulePage() {
     }))
   }
 
-  // Открыть модальное окно редактирования проекта при двойном клике
-  const handleTaskDoubleClick = (task: Task) => {
+  // Открыть модальное окно редактирования проекта при клике
+  const handleTaskClick = (task: Task) => {
     const taskIdParts = task.id.split('-')
     if (taskIdParts.includes('proj')) {
       const projIndex = taskIdParts.indexOf('proj')
@@ -738,7 +738,7 @@ export function SchedulePage() {
                 tasks={tasks}
                 viewMode={viewMode}
                 onDateChange={handleTaskChange}
-                onDoubleClick={handleTaskDoubleClick}
+                onClick={handleTaskClick}
                 listCellWidth="0px"
                 columnWidth={columnWidth}
                 locale="ru"
