@@ -680,10 +680,10 @@ export function SchedulePage() {
       />
 
       {/* Split Layout: Карточки слева + Gantt справа */}
-      <div className="schedule-split-layout">
+      <div className="schedule-split-layout vertical-scrollbar">
         {/* Левая панель - карточки людей */}
         <div className="people-cards-panel">
-          <div className="cards-list">
+          <div className="cards-list vertical-scrollbar">
             {teams.map(team =>
               team.executors.map(executor => (
                 <PersonCard
@@ -732,7 +732,7 @@ export function SchedulePage() {
           </div>
 
           {/* Gantt График */}
-          <div className="gantt-container">
+          <div className="gantt-container horizontal-scrollbar">
             {tasks.length > 0 ? (
               <Gantt
                 tasks={tasks}
