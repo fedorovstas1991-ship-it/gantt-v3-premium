@@ -4,6 +4,7 @@ import { Filter, X, Search, ChevronRight } from 'lucide-react'
 export interface Filters {
   teams: string[]
   people: string[]
+  projects: string[]
   projectName: string
   dateFrom: string
   dateTo: string
@@ -14,11 +15,12 @@ interface FilterDropdownProps {
   onFiltersChange: (filters: Filters) => void
   teams: Array<{ id: string; name: string }>
   people: Array<{ id: string; name: string }>
+  projects: Array<{ id: string; name: string }>
 }
 
-type FilterCategory = 'teams' | 'people' | 'search'
+type FilterCategory = 'teams' | 'people' | 'projects' | 'search'
 
-export function FilterDropdown({ filters, onFiltersChange, teams, people }: FilterDropdownProps) {
+export function FilterDropdown({ filters, onFiltersChange, teams, people, projects }: FilterDropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState<FilterCategory | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
@@ -52,17 +54,25 @@ export function FilterDropdown({ filters, onFiltersChange, teams, people }: Filt
     onFiltersChange({ ...filters, people: newPeople })
   }
 
+  const handleToggleProject = (projectId: string) => {
+    const newProjects = filters.projects.includes(projectId)
+      ? filters.projects.filter(id => id !== projectId)
+      : [...filters.projects, projectId]
+    onFiltersChange({ ...filters, projects: newProjects })
+  }
+
   const handleClearAll = () => {
     onFiltersChange({
       teams: [],
       people: [],
+      projects: [],
       projectName: '',
       dateFrom: '',
       dateTo: ''
     })
   }
 
-  const activeFiltersCount = filters.teams.length + filters.people.length +
+  const activeFiltersCount = filters.teams.length + filters.people.length + filters.projects.length +
     (filters.projectName ? 1 : 0) + (filters.dateFrom ? 1 : 0) + (filters.dateTo ? 1 : 0)
 
   return (
@@ -147,6 +157,37 @@ export function FilterDropdown({ filters, onFiltersChange, teams, people }: Filt
                             onChange={() => handleToggleTeam(team.id)}
                           />
                           <span>{team.name}</span>
+                        </label>
+                      ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div
+              className="filter-category-item"
+              onMouseEnter={() => setActiveCategory('projects')}
+            >
+              <span>Project</span>
+              <ChevronRight size={16} />
+
+              {activeCategory === 'projects' && (
+                <div className="filter-submenu">
+                  <div className="filter-submenu-operators">
+                    <button className="operator-btn active">is</button>
+                    <button className="operator-btn">is not</button>
+                  </div>
+                  <div className="filter-submenu-options">
+                    {projects
+                      .filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                      .map(project => (
+                        <label key={project.id} className="filter-option">
+                          <input
+                            type="checkbox"
+                            checked={filters.projects.includes(project.id)}
+                            onChange={() => handleToggleProject(project.id)}
+                          />
+                          <span>{project.name}</span>
                         </label>
                       ))}
                   </div>

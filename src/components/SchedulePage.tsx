@@ -183,6 +183,11 @@ function applyFilters(teams: TeamData[], filters: Filters): TeamData[] {
       })
       .map(executor => {
         const filteredProjects = executor.projects.filter(project => {
+          // Фильтр по ID проектов
+          if (filters.projects.length > 0 && !filters.projects.includes(project.projectId)) {
+            return false
+          }
+
           // Фильтр по названию проекта
           if (filters.projectName && !project.projectName.toLowerCase().includes(filters.projectName.toLowerCase())) {
             return false
@@ -378,6 +383,7 @@ export function SchedulePage() {
   const [filters, setFilters] = useLocalStorage<Filters>('gantt-filters', {
     teams: [],
     people: [],
+    projects: [],
     projectName: '',
     dateFrom: '',
     dateTo: ''
@@ -492,6 +498,13 @@ export function SchedulePage() {
   // Подготовка данных для FilterPanel
   const teamsList = teams.map(t => ({ id: t.id, name: t.name }))
   const peopleList = teams.flatMap(t => t.executors.map(e => ({ id: e.id, name: e.name })))
+  const projectsList = Array.from(
+    new Map(
+      teams.flatMap(t => t.executors.flatMap(e =>
+        e.projects.map(p => [p.projectId, { id: p.projectId, name: p.projectName }])
+      ))
+    ).values()
+  )
 
   const totalExecutors = filteredTeams.reduce((sum, t) => sum + t.executors.length, 0)
   const totalProjects = new Set(
@@ -532,6 +545,7 @@ export function SchedulePage() {
         onFiltersChange={setFilters}
         teams={teamsList}
         people={peopleList}
+        projects={projectsList}
       />
 
       {/* Split Layout: Карточки слева + Gantt справа */}
@@ -579,7 +593,7 @@ export function SchedulePage() {
               className={`zoom-btn ${viewMode === ViewMode.Month && columnWidth < 50 ? 'active' : ''}`}
               onClick={() => {
                 setViewMode(ViewMode.Month)
-                setColumnWidth(30)
+                setColumnWidth(60)
               }}
             >
               Полугодие
