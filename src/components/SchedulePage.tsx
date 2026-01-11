@@ -170,14 +170,16 @@ const mockTeams: TeamData[] = [
 function applyFilters(teams: TeamData[], filters: Filters): TeamData[] {
   return teams.map(team => {
     // Фильтр по командам
-    if (filters.teams.length > 0 && !filters.teams.includes(team.id)) {
+    const teamIds = filters.teams || []
+    if (teamIds.length > 0 && !teamIds.includes(team.id)) {
       return { ...team, executors: [] }
     }
 
     const filteredExecutors = team.executors
       .filter(executor => {
         // Фильтр по людям
-        if (filters.people.length > 0 && !filters.people.includes(executor.id)) {
+        const peopleIds = filters.people || []
+        if (peopleIds.length > 0 && !peopleIds.includes(executor.id)) {
           return false
         }
         return true
@@ -185,7 +187,8 @@ function applyFilters(teams: TeamData[], filters: Filters): TeamData[] {
       .map(executor => {
         const filteredProjects = (executor.projects || []).filter(project => {
           // Фильтр по ID проектов
-          if (filters.projects.length > 0 && !filters.projects.includes(project.projectId)) {
+          const projectIds = filters.projects || []
+          if (projectIds.length > 0 && !projectIds.includes(project.projectId)) {
             return false
           }
 
