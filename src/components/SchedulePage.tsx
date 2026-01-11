@@ -4,6 +4,7 @@ import { Users, FolderKanban, Calendar, Plus } from 'lucide-react'
 import { PersonCard } from './PersonCard'
 import { FilterDropdown, Filters } from './FilterDropdown'
 import { ProjectModal, NewProject } from './ProjectModal'
+import { EditProjectModal, EditedProject } from './EditProjectModal'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import 'gantt-task-react/dist/index.css'
 
@@ -182,7 +183,7 @@ function applyFilters(teams: TeamData[], filters: Filters): TeamData[] {
         return true
       })
       .map(executor => {
-        const filteredProjects = executor.projects.filter(project => {
+        const filteredProjects = (executor.projects || []).filter(project => {
           // Фильтр по ID проектов
           if (filters.projects.length > 0 && !filters.projects.includes(project.projectId)) {
             return false
@@ -208,7 +209,7 @@ function applyFilters(teams: TeamData[], filters: Filters): TeamData[] {
 
         return { ...executor, projects: filteredProjects }
       })
-      .filter(executor => executor.projects.length > 0)
+      .filter(executor => (executor.projects || []).length > 0)
 
     return { ...team, executors: filteredExecutors }
   }).filter(team => team.executors.length > 0)
@@ -394,6 +395,15 @@ export function SchedulePage() {
   const [selectedExecutorId, setSelectedExecutorId] = useState<string | undefined>()
   const [modalInitialDates, setModalInitialDates] = useState<{ start?: Date; end?: Date }>({})
 
+  // Состояние модального окна редактирования проекта
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [editingProject, setEditingProject] = useState<{
+    executorId: string
+    executorName: string
+    projectIndex: number
+    project: ProjectAssignment
+  } | null>(null)
+
   // Real-time фильтрация (useMemo для оптимизации)
   const filteredTeams = useMemo(() => applyFilters(teams, filters), [teams, filters])
 
@@ -493,6 +503,124 @@ export function SchedulePage() {
       ...prev,
       people: [personId]
     }))
+  }
+
+  // Открыть модальное окно редактирования проекта при двойном клике
+  const handleTaskDoubleClick = (task: Task) => {
+    const taskIdParts = task.id.split('-')
+    if (taskIdParts.includes('proj')) {
+      const projIndex = taskIdParts.indexOf('proj')
+      const executorId = taskIdParts.slice(0, projIndex).join('-')
+      const projectIdx = parseInt(taskIdParts[projIndex + 1])
+
+      // Найти executor и project
+      for (const team of teams) {
+        for (const executor of team.executors) {
+          if (executor.id === executorId && executor.projects[projectIdx]) {
+            setEditingProject({
+              executorId: executor.id,
+              executorName: executor.name,
+              projectIndex: projectIdx,
+              project: executor.projects[projectIdx]
+            })
+            setIsEditModalOpen(true)
+            return
+          }
+        }
+      }
+    }
+  }
+
+  // Сохранить изменения проекта (включая переназначение)
+  const handleSaveEditedProject = (updatedProject: EditedProject) => {
+    if (!editingProject) return
+
+    const oldExecutorId = editingProject.executorId
+    const newExecutorId = updatedProject.executorId
+
+    setTeams(prevTeams => {
+      return prevTeams.map(team => {
+        return {
+          ...team,
+          executors: team.executors.map(executor => {
+            // Удаляем проект из старого исполнителя
+            if (executor.id === oldExecutorId) {
+              const newProjects = [...executor.projects]
+
+              // Если проект переназначается другому исполнителю
+              if (oldExecutorId !== newExecutorId) {
+                newProjects.splice(editingProject.projectIndex, 1)
+              } else {
+                // Если остается у того же исполнителя, обновляем
+                newProjects[editingProject.projectIndex] = {
+                  projectId: updatedProject.projectId,
+                  projectName: updatedProject.projectName,
+                  start: updatedProject.start,
+                  end: updatedProject.end,
+                  hc: updatedProject.hc,
+                  color: updatedProject.color
+                }
+              }
+
+              return {
+                ...executor,
+                projects: newProjects
+              }
+            }
+
+            // Добавляем проект новому исполнителю (если переназначение)
+            if (executor.id === newExecutorId && oldExecutorId !== newExecutorId) {
+              return {
+                ...executor,
+                projects: [
+                  ...executor.projects,
+                  {
+                    projectId: updatedProject.projectId,
+                    projectName: updatedProject.projectName,
+                    start: updatedProject.start,
+                    end: updatedProject.end,
+                    hc: updatedProject.hc,
+                    color: updatedProject.color
+                  }
+                ]
+              }
+            }
+
+            return executor
+          })
+        }
+      })
+    })
+
+    setIsEditModalOpen(false)
+    setEditingProject(null)
+  }
+
+  // Удалить проект
+  const handleDeleteProject = () => {
+    if (!editingProject) return
+
+    setTeams(prevTeams => {
+      return prevTeams.map(team => {
+        return {
+          ...team,
+          executors: team.executors.map(executor => {
+            if (executor.id === editingProject.executorId) {
+              const newProjects = [...executor.projects]
+              newProjects.splice(editingProject.projectIndex, 1)
+              return {
+                ...executor,
+                projects: newProjects
+              }
+            }
+            return executor
+          })
+        }
+      })
+    })
+
+    setIsEditModalOpen(false)
+    setEditingProject(null)
   }
 
   // Подготовка данных для FilterPanel
@@ -607,6 +735,7 @@ export function SchedulePage() {
                 tasks={tasks}
                 viewMode={viewMode}
                 onDateChange={handleTaskChange}
+                onDoubleClick={handleTaskDoubleClick}
                 listCellWidth="0px"
                 columnWidth={columnWidth}
                 locale="ru"
@@ -635,6 +764,37 @@ export function SchedulePage() {
         initialStartDate={modalInitialDates.start}
         initialEndDate={modalInitialDates.end}
       />
+
+      {/* Модальное окно редактирования проекта */}
+      {editingProject && (
+        <EditProjectModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false)
+            setEditingProject(null)
+          }}
+          onSave={handleSaveEditedProject}
+          onDelete={handleDeleteProject}
+          project={{
+            projectId: editingProject.project.projectId,
+            projectName: editingProject.project.projectName,
+            start: editingProject.project.start,
+            end: editingProject.project.end,
+            hc: editingProject.project.hc,
+            color: editingProject.project.color,
+            executorId: editingProject.executorId,
+            executorName: editingProject.executorName
+          }}
+          availableProjects={Array.from(
+            new Map(
+              teams.flatMap(t => t.executors.flatMap(e =>
+                e.projects.map(p => [p.projectId, { id: p.projectId, name: p.projectName, color: p.color }])
+              ))
+            ).values()
+          )}
+          availablePeople={teams.flatMap(t => t.executors.map(e => ({ id: e.id, name: e.name })))}
+        />
+      )}
     </div>
   )
 }
