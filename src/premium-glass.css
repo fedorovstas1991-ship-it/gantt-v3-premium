@@ -775,6 +775,16 @@ button,
     background-color: var(--bg-primary) !important;
   }
 
+  /* Фон header календаря */
+  ._3eULf {
+    background-color: var(--bg-secondary) !important;
+  }
+
+  /* Линия разделителя header */
+  ._3eULf rect {
+    fill: var(--bg-secondary) !important;
+  }
+
   /* Цветные блоки задач НЕ ТРОГАЕМ - они управляются через styles в данных */
 }
 
@@ -1361,6 +1371,7 @@ button,
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 0;
+  max-width: 100%;
 }
 
 /* ========= EDIT PROJECT MODAL ========= */
@@ -1636,6 +1647,7 @@ button,
 /* Левая панель - карточки людей */
 .people-cards-panel {
   width: 320px;
+  min-width: 320px;
   flex-shrink: 0;
   background: var(--bg-primary);
   border-right: 1px solid var(--border-primary);
@@ -1652,8 +1664,8 @@ button,
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
-  overflow-y: visible;
+  overflow: hidden;
+  min-width: 0;
 }
 
 .gantt-zoom-controls {
