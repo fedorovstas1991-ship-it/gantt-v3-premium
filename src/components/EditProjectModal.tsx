@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { X, Calendar, Clock, Users } from 'lucide-react'
+import { X, Clock } from 'lucide-react'
 
 interface EditProjectModalProps {
   isOpen: boolean
@@ -289,9 +289,11 @@ export function EditProjectModal({
             Cancel
           </button>
           <div className="footer-actions">
-            <button className="actions-dropdown-btn">
-              Actions ▼
-            </button>
+            {onDelete && (
+              <button className="actions-dropdown-btn" onClick={handleDelete}>
+                Удалить
+              </button>
+            )}
           </div>
         </div>
       </div>
