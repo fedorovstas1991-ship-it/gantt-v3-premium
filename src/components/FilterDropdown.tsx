@@ -47,19 +47,20 @@ export function FilterDropdown({ filters, onFiltersChange, teams, people, projec
     onFiltersChange({ ...filters, teams: newTeams })
   }
 
-  const handleTogglePerson = (personId: string) => {
-    const newPeople = filters.people.includes(personId)
-      ? filters.people.filter(id => id !== personId)
-      : [...filters.people, personId]
-    onFiltersChange({ ...filters, people: newPeople })
-  }
+const handleTogglePerson = (personId: string) => {
+  const newPeople = (filters.people || []).includes(personId)
+    ? (filters.people || []).filter(id => id !== personId)
+    : [...(filters.people || []), personId]
+  onFiltersChange({ ...filters, people: newPeople })
+}
 
-  const handleToggleProject = (projectId: string) => {
-    const newProjects = filters.projects.includes(projectId)
-      ? filters.projects.filter(id => id !== projectId)
-      : [...filters.projects, projectId]
-    onFiltersChange({ ...filters, projects: newProjects })
-  }
+const handleToggleProject = (projectId: string) => {
+  const newProjects = (filters.projects || []).includes(projectId)
+    ? (filters.projects || []).filter(id => id !== projectId)
+    : [...(filters.projects || []), projectId]
+  onFiltersChange({ ...filters, projects: newProjects })
+}
+
 
   const handleClearAll = () => {
     onFiltersChange({
@@ -72,8 +73,11 @@ export function FilterDropdown({ filters, onFiltersChange, teams, people, projec
     })
   }
 
-  const activeFiltersCount = filters.teams.length + filters.people.length + filters.projects.length +
-    (filters.projectName ? 1 : 0) + (filters.dateFrom ? 1 : 0) + (filters.dateTo ? 1 : 0)
+const activeFiltersCount = 
+  [...(filters.teams || []), ...(filters.people || []), ...(filters.projects || [])].length +
+  (filters.projectName ? 1 : 0) + (filters.dateFrom ? 1 : 0) + (filters.dateTo ? 1 : 0)
+
+
 
   return (
     <div className="filter-dropdown-wrapper" ref={dropdownRef}>
@@ -184,7 +188,7 @@ export function FilterDropdown({ filters, onFiltersChange, teams, people, projec
                         <label key={project.id} className="filter-option">
                           <input
                             type="checkbox"
-                            checked={filters.projects.includes(project.id)}
+                            checked={filters.projects?.includes(project.id) || false}
                             onChange={() => handleToggleProject(project.id)}
                           />
                           <span>{project.name}</span>

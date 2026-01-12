@@ -4,7 +4,6 @@ import { Sidebar } from './components/Sidebar'
 import { SchedulePage } from './components/SchedulePage'
 import { SettingsPage } from './components/SettingsPage'
 import './premium-glass.css'
-import './plane-design.css'
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState('schedule')
