@@ -643,47 +643,76 @@ export function SchedulePage() {
   ).size
 
   return (
-    <div className="schedule-page">
-      {/* Header с статистикой */}
-      <div className="page-header">
-        <div className="header-content">
-          <h1>Расписание</h1>
-          <div className="header-stats">
-            <div className="stat-badge">
-              <Users size={16} />
-              <span>{totalExecutors} человек</span>
+    <div className="gantt-root">
+      {/* Header (Plane.io style) */}
+      <div className="gantt-header">
+        <div className="flex items-center gap-2">
+          <h1 className="text-16 font-semibold text-primary">Расписание</h1>
+          <div className="flex items-center gap-2 text-13 text-secondary">
+            <div className="flex items-center gap-1">
+              <Users size={14} />
+              <span>{totalExecutors}</span>
             </div>
-            <div className="stat-badge">
-              <FolderKanban size={16} />
-              <span>{totalProjects} проектов</span>
-            </div>
-            <div className="stat-badge">
-              <Calendar size={16} />
-              <span>Янв–Июнь 2026</span>
+            <div className="flex items-center gap-1">
+              <FolderKanban size={14} />
+              <span>{totalProjects}</span>
             </div>
           </div>
         </div>
 
-        <button className="btn-primary" onClick={handleAddPerson}>
-          <Plus size={18} strokeWidth={2.5} />
-          <span>Добавить</span>
-        </button>
+        <div className="flex items-center gap-2">
+          {/* View buttons */}
+          <button
+            className={`view-btn ${viewMode === ViewMode.Week ? 'active' : ''}`}
+            onClick={() => {
+              setViewMode(ViewMode.Week)
+              setColumnWidth(50)
+            }}
+          >
+            Неделя
+          </button>
+          <button
+            className={`view-btn ${viewMode === ViewMode.Month && columnWidth >= 50 ? 'active' : ''}`}
+            onClick={() => {
+              setViewMode(ViewMode.Month)
+              setColumnWidth(70)
+            }}
+          >
+            Месяц
+          </button>
+          <button
+            className={`view-btn ${viewMode === ViewMode.Month && columnWidth < 50 ? 'active' : ''}`}
+            onClick={() => {
+              setViewMode(ViewMode.Month)
+              setColumnWidth(60)
+            }}
+          >
+            Полугодие
+          </button>
+
+          <FilterDropdown
+            filters={filters}
+            onFiltersChange={setFilters}
+            teams={teamsList}
+            people={peopleList}
+            projects={projectsList}
+          />
+
+          <button className="btn-primary" onClick={handleAddPerson}>
+            <Plus size={16} />
+            <span>Добавить</span>
+          </button>
+        </div>
       </div>
 
-      {/* Компактные фильтры */}
-      <FilterDropdown
-        filters={filters}
-        onFiltersChange={setFilters}
-        teams={teamsList}
-        people={peopleList}
-        projects={projectsList}
-      />
-
-      {/* Split Layout: Карточки слева + Gantt справа */}
-      <div className="schedule-split-layout vertical-scrollbar">
-        {/* Левая панель - карточки людей */}
-        <div className="people-cards-panel">
-          <div className="cards-list vertical-scrollbar">
+      {/* Main content (Plane.io style) */}
+      <div className="gantt-main vertical-scrollbar horizontal-scrollbar scrollbar-lg">
+        {/* Sidebar (people cards) */}
+        <div className="gantt-sidebar">
+          <div className="gantt-sidebar-header">
+            <span>Исполнитель</span>
+          </div>
+          <div className="gantt-person-cards">
             {teams.map(team =>
               team.executors.map(executor => (
                 <PersonCard
@@ -698,58 +727,24 @@ export function SchedulePage() {
           </div>
         </div>
 
-        {/* Правая панель - Gantt диаграмма */}
-        <div className="gantt-panel">
-          {/* Кнопки масштаба НАД диаграммой */}
-          <div className="gantt-zoom-controls">
-            <button
-              className={`zoom-btn ${viewMode === ViewMode.Week ? 'active' : ''}`}
-              onClick={() => {
-                setViewMode(ViewMode.Week)
-                setColumnWidth(50)
-              }}
-            >
-              Неделя
-            </button>
-            <button
-              className={`zoom-btn ${viewMode === ViewMode.Month && columnWidth >= 50 ? 'active' : ''}`}
-              onClick={() => {
-                setViewMode(ViewMode.Month)
-                setColumnWidth(70)
-              }}
-            >
-              Месяц
-            </button>
-            <button
-              className={`zoom-btn ${viewMode === ViewMode.Month && columnWidth < 50 ? 'active' : ''}`}
-              onClick={() => {
-                setViewMode(ViewMode.Month)
-                setColumnWidth(60)
-              }}
-            >
-              Полугодие
-            </button>
-          </div>
-
-          {/* Gantt График */}
-          <div className="gantt-container horizontal-scrollbar">
-            {tasks.length > 0 ? (
-              <Gantt
-                tasks={tasks}
-                viewMode={viewMode}
-                onDateChange={handleTaskChange}
-                onClick={handleTaskClick}
-                listCellWidth="0px"
-                columnWidth={columnWidth}
-                locale="ru"
-              />
-            ) : (
-              <div className="gantt-empty-state">
-                <p>Нет проектов для отображения</p>
-                <span>Попробуйте изменить фильтры</span>
-              </div>
-            )}
-          </div>
+        {/* Timeline area (Plane.io style) */}
+        <div className="gantt-timeline">
+          {tasks.length > 0 ? (
+            <Gantt
+              tasks={tasks}
+              viewMode={viewMode}
+              onDateChange={handleTaskChange}
+              onClick={handleTaskClick}
+              listCellWidth="0px"
+              columnWidth={columnWidth}
+              locale="ru"
+            />
+          ) : (
+            <div className="gantt-empty-state">
+              <p className="text-14 text-secondary">Нет проектов для отображения</p>
+              <span className="text-13 text-tertiary">Попробуйте изменить фильтры</span>
+            </div>
+          )}
         </div>
       </div>
 

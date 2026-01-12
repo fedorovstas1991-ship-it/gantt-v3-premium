@@ -1,0 +1,475 @@
+/* 🎨 PLANE.IO DESIGN SYSTEM - Полная копия для Timeline/Gantt Layout */
+
+/* ========= FONTS ========= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* ========= КОНСТАНТЫ РАЗМЕРОВ (из Plane.io constants.ts) ========= */
+:root {
+  --block-height: 44px;
+  --header-height: 48px;
+  --gantt-breadcrumbs-height: 40px;
+  --sidebar-width: 360px;
+  --default-block-width: 60px;
+}
+
+/* ========= БАЗОВАЯ ТИПОГРАФИКА ========= */
+:root {
+  --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-code: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Font weights */
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-heavy: 800;
+
+  /* Font sizes (Plane.io exact values) */
+  --text-9: 0.5625rem;   /* 9px */
+  --text-10: 0.625rem;   /* 10px */
+  --text-11: 0.6875rem;  /* 11px */
+  --text-12: 0.75rem;    /* 12px */
+  --text-13: 0.8125rem;  /* 13px */
+  --text-14: 0.875rem;   /* 14px */
+  --text-16: 1rem;       /* 16px */
+}
+
+/* ========= ЦВЕТОВАЯ ПАЛИТРА - LIGHT THEME ========= */
+:root,
+[data-theme="light"] {
+  /* Neutral palette */
+  --neutral-white: #ffffff;
+  --neutral-black: #1a1a1a;
+  --neutral-100: #fafafa;
+  --neutral-200: #f5f5f5;
+  --neutral-300: #f0f0f0;
+  --neutral-400: #ebebeb;
+  --neutral-500: #e0e0e0;
+  --neutral-600: #d4d4d4;
+  --neutral-700: #c7c7c7;
+  --neutral-800: #b3b3b3;
+  --neutral-900: #999999;
+  --neutral-1000: #858585;
+  --neutral-1100: #707070;
+  --neutral-1200: #3d3d3d;
+
+  /* Brand */
+  --brand-default: #3b82f6;
+  --brand-100: #eff6ff;
+
+  /* Semantic backgrounds */
+  --bg-canvas: var(--neutral-300);
+  --bg-surface-1: var(--neutral-white);
+  --bg-surface-2: var(--neutral-100);
+  --bg-layer-1: var(--neutral-200);
+  --bg-layer-2: var(--neutral-white);
+  --bg-layer-transparent: transparent;
+  --bg-layer-transparent-hover: rgba(0, 0, 0, 0.05);
+  --bg-layer-transparent-active: rgba(0, 0, 0, 0.1);
+  --bg-layer-transparent-selected: rgba(0, 0, 0, 0.15);
+  --bg-accent-primary: var(--brand-default);
+  --bg-accent-subtle: var(--brand-100);
+
+  /* Semantic borders */
+  --border-subtle: var(--neutral-400);
+  --border-subtle-1: var(--neutral-500);
+  --border-strong: var(--neutral-600);
+  --border-strong-1: var(--neutral-700);
+  --border-accent-strong: var(--brand-default);
+
+  /* Semantic text */
+  --txt-primary: var(--neutral-1200);
+  --txt-secondary: var(--neutral-1100);
+  --txt-tertiary: var(--neutral-1000);
+  --txt-placeholder: var(--neutral-900);
+  --txt-on-color: var(--neutral-white);
+
+  /* Scrollbar */
+  --scrollbar-thumb: var(--neutral-600);
+  --scrollbar-thumb-hover: var(--neutral-700);
+  --scrollbar-thumb-active: var(--neutral-800);
+
+  /* Shadows */
+  --shadow-raised-100: 0px 1px 6px -1px rgba(41, 47, 61, 0.03), 0px 1px 4px 0px rgba(41, 47, 61, 0.04);
+  --shadow-raised-200: 0px 1px 2px -1px rgba(41, 47, 61, 0.06), 0px 1px 3px 0px rgba(41, 47, 61, 0.05);
+  --shadow-raised-300: 0px 2px 4px -1px rgba(41, 47, 61, 0.04), 0px 4px 6px -1px rgba(41, 47, 61, 0.05);
+}
+
+/* ========= ЦВЕТОВАЯ ПАЛИТРА - DARK THEME ========= */
+[data-theme="dark"] {
+  /* Neutral palette */
+  --neutral-black: #000000;
+  --neutral-100: #0d0d0d;
+  --neutral-200: #1a1a1a;
+  --neutral-300: #262626;
+  --neutral-400: #333333;
+  --neutral-500: #404040;
+  --neutral-600: #4d4d4d;
+  --neutral-700: #5a5a5a;
+  --neutral-800: #6b6b6b;
+  --neutral-900: #858585;
+  --neutral-1000: #a3a3a3;
+  --neutral-1100: #c2c2c2;
+  --neutral-1200: #f5f5f5;
+
+  /* Brand */
+  --brand-default: #60a5fa;
+  --brand-100: #1e3a8a;
+
+  /* Semantic backgrounds */
+  --bg-canvas: var(--neutral-black);
+  --bg-surface-1: var(--neutral-100);
+  --bg-surface-2: var(--neutral-200);
+  --bg-layer-1: var(--neutral-200);
+  --bg-layer-transparent: transparent;
+  --bg-layer-transparent-hover: rgba(255, 255, 255, 0.05);
+  --bg-layer-transparent-active: rgba(255, 255, 255, 0.1);
+
+  /* Semantic borders */
+  --border-subtle: var(--neutral-400);
+  --border-subtle-1: var(--neutral-500);
+  --border-strong: var(--neutral-600);
+  --border-strong-1: var(--neutral-700);
+
+  /* Semantic text */
+  --txt-primary: var(--neutral-1200);
+  --txt-secondary: var(--neutral-1100);
+  --txt-tertiary: var(--neutral-1000);
+  --txt-placeholder: var(--neutral-900);
+
+  /* Scrollbar */
+  --scrollbar-thumb: var(--neutral-600);
+  --scrollbar-thumb-hover: var(--neutral-700);
+  --scrollbar-thumb-active: var(--neutral-800);
+
+  /* Shadows */
+  --shadow-raised-100: 0px 1px 6px -1px rgba(0, 0, 0, 0.3), 0px 1px 4px 0px rgba(0, 0, 0, 0.4);
+  --shadow-raised-200: 0px 1px 2px -1px rgba(0, 0, 0, 0.5), 0px 1px 3px 0px rgba(0, 0, 0, 0.4);
+  --shadow-raised-300: 0px 2px 4px -1px rgba(0, 0, 0, 0.4), 0px 4px 6px -1px rgba(0, 0, 0, 0.5);
+}
+
+/* ========= BASE STYLES ========= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-regular);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--bg-canvas);
+  color: var(--txt-primary);
+  font-size: var(--text-14);
+  line-height: 1.5;
+}
+
+/* ========= SCROLLBAR STYLES (Plane.io exact) ========= */
+.vertical-scrollbar::-webkit-scrollbar {
+  width: 16px;
+}
+
+.horizontal-scrollbar::-webkit-scrollbar {
+  height: 16px;
+}
+
+.scrollbar-lg::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+.vertical-scrollbar::-webkit-scrollbar-thumb,
+.horizontal-scrollbar::-webkit-scrollbar-thumb,
+.scrollbar-lg::-webkit-scrollbar-thumb {
+  border: 4px solid rgba(0, 0, 0, 0);
+  background-clip: padding-box;
+  border-radius: 9999px;
+  background: var(--scrollbar-thumb);
+}
+
+.vertical-scrollbar::-webkit-scrollbar-thumb:hover,
+.horizontal-scrollbar::-webkit-scrollbar-thumb:hover,
+.scrollbar-lg::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+.vertical-scrollbar::-webkit-scrollbar-thumb:active,
+.horizontal-scrollbar::-webkit-scrollbar-thumb:active,
+.scrollbar-lg::-webkit-scrollbar-thumb:active {
+  background: var(--scrollbar-thumb-active);
+}
+
+.vertical-scrollbar::-webkit-scrollbar-track,
+.horizontal-scrollbar::-webkit-scrollbar-track,
+.scrollbar-lg::-webkit-scrollbar-track {
+  background: var(--bg-layer-transparent);
+  border-radius: 9999px;
+}
+
+/* ========= GANTT/TIMELINE LAYOUT ========= */
+
+/* Root container */
+.gantt-root {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  user-select: none;
+  border-radius: 2px;
+  background: var(--bg-surface-1);
+  box-shadow: var(--shadow-raised-100);
+  border: 0.5px solid var(--border-subtle);
+}
+
+/* Header (breadcrumbs area) */
+.gantt-header {
+  position: relative;
+  display: flex;
+  width: 100%;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  padding: 0.5rem;
+  background: var(--bg-surface-1);
+  height: var(--gantt-breadcrumbs-height);
+}
+
+/* Main content area */
+.gantt-main {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  display: flex;
+  border-top: 0.5px solid var(--border-subtle);
+}
+
+/* Sidebar (people cards) */
+.gantt-sidebar {
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  min-height: 100%;
+  height: max-content;
+  flex-shrink: 0;
+  border-right: 0.5px solid var(--border-subtle-1);
+  background: var(--bg-surface-1);
+  width: var(--sidebar-width);
+}
+
+/* Sidebar header */
+.gantt-sidebar-header {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-bottom: 0.5px solid var(--border-subtle-1);
+  padding-bottom: 0.5rem;
+  padding-right: 1rem;
+  font-size: var(--text-13);
+  font-weight: var(--font-weight-medium);
+  color: var(--txt-tertiary);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg-surface-1);
+  height: var(--header-height);
+}
+
+/* Person card row */
+.gantt-person-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-right: 1rem;
+  background: var(--bg-layer-transparent);
+  height: var(--block-height);
+  transition: background-color 0.15s ease;
+}
+
+.gantt-person-row:hover {
+  background: var(--bg-layer-transparent-hover);
+}
+
+/* Timeline area */
+.gantt-timeline {
+  position: relative;
+  min-height: 100%;
+  height: max-content;
+  flex-shrink: 0;
+  flex-grow: 1;
+}
+
+/* Timeline header container */
+.gantt-timeline-header {
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--bg-surface-1);
+  flex-shrink: 0;
+  outline: 1px solid var(--border-subtle-1);
+  height: var(--header-height);
+}
+
+/* Week/Month/Quarter view buttons */
+.view-btn {
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  font-size: var(--text-11);
+  background: var(--bg-layer-transparent);
+  color: var(--txt-secondary);
+  border: none;
+  transition: all 0.15s ease;
+}
+
+.view-btn:hover {
+  background: var(--bg-layer-transparent-hover);
+}
+
+.view-btn.active {
+  background: var(--bg-layer-transparent-selected);
+  color: var(--txt-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Grid lines */
+.gantt-grid-cell {
+  flex-shrink: 0;
+  outline: 0.25px solid var(--border-subtle-1);
+}
+
+/* Project block */
+.gantt-block {
+  position: relative;
+  z-index: 5;
+  height: var(--block-height);
+}
+
+.gantt-block-content {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  height: 32px;
+  width: 100%;
+  align-items: center;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.gantt-block-overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+}
+
+.gantt-block-text {
+  position: sticky;
+  width: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-left: 0.625rem;
+  padding-right: 0.625rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  font-size: var(--text-13);
+  color: var(--txt-primary);
+  flex: 1;
+  left: var(--sidebar-width);
+}
+
+/* Utility classes */
+.text-9 { font-size: var(--text-9); }
+.text-10 { font-size: var(--text-10); }
+.text-11 { font-size: var(--text-11); }
+.text-12 { font-size: var(--text-12); }
+.text-13 { font-size: var(--text-13); }
+.text-14 { font-size: var(--text-14); }
+.text-16 { font-size: var(--text-16); }
+
+.font-regular { font-weight: var(--font-weight-regular); }
+.font-medium { font-weight: var(--font-weight-medium); }
+.font-semibold { font-weight: var(--font-weight-semibold); }
+.font-bold { font-weight: var(--font-weight-bold); }
+
+.text-primary { color: var(--txt-primary); }
+.text-secondary { color: var(--txt-secondary); }
+.text-tertiary { color: var(--txt-tertiary); }
+.text-placeholder { color: var(--txt-placeholder); }
+
+.bg-surface-1 { background: var(--bg-surface-1); }
+.bg-surface-2 { background: var(--bg-surface-2); }
+.bg-layer-1 { background: var(--bg-layer-1); }
+.bg-accent-primary { background: var(--bg-accent-primary); }
+
+.border-subtle { border-color: var(--border-subtle); }
+.border-subtle-1 { border-color: var(--border-subtle-1); }
+.border-strong { border-color: var(--border-strong); }
+
+/* Flexbox utilities */
+.flex { display: flex; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-4 { gap: 1rem; }
+
+/* Spacing utilities */
+.p-1 { padding: 0.25rem; }
+.p-2 { padding: 0.5rem; }
+.px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+.px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+.py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+.py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+
+/* Border radius */
+.rounded-sm { border-radius: 4px; }
+.rounded-md { border-radius: 6px; }
+
+/* Transitions */
+.transition-all { transition: all 0.15s ease; }
+
+/* Empty state */
+.gantt-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 0.5rem;
+}
+
+/* Legacy button styles */
+.btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  background: var(--bg-accent-primary);
+  color: var(--txt-on-color);
+  font-size: var(--text-13);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
