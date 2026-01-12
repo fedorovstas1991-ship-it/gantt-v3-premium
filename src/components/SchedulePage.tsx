@@ -1,24 +1,24 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { Gantt, Task, ViewMode } from 'gantt-task-react'
-import { Users, FolderKanban, Calendar, Plus } from 'lucide-react'
-import { PersonCard } from './PersonCard'
+import { Users, FolderKanban, Plus } from 'lucide-react'
+import { PersonCardRow } from './PersonCardRow'
 import { FilterDropdown, Filters } from './FilterDropdown'
 import { ProjectModal, NewProject } from './ProjectModal'
 import { EditProjectModal, EditedProject } from './EditProjectModal'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import 'gantt-task-react/dist/index.css'
 
-// 🎯 Типы данных
+// 🎯 Типы данных (экспортируются для использования в других компонентах)
 type ViewType = 'projects' | 'teams' // Оставляем для будущего функционала
 
-interface TeamData {
+export interface TeamData {
   id: string
   name: string
   color: string
   executors: ExecutorData[]
 }
 
-interface ExecutorData {
+export interface ExecutorData {
   id: string
   name: string
   avatar?: string
@@ -26,7 +26,7 @@ interface ExecutorData {
   projects: ProjectAssignment[]
 }
 
-interface ProjectAssignment {
+export interface ProjectAssignment {
   projectId: string
   projectName: string
   start: Date
@@ -383,6 +383,9 @@ export function SchedulePage() {
   const [columnWidth, setColumnWidth] = useState<number>(70)
   const [teams, setTeams] = useState<TeamData[]>(mockTeams)
 
+  // Ref for single scroll container (Plane.io pattern)
+  const ganttContainerRef = useRef<HTMLDivElement>(null)
+
   // Фильтры с сохранением в localStorage (паттерн Plane)
   const [filters, setFilters] = useLocalStorage<Filters>('gantt-filters', {
     teams: [],
@@ -502,10 +505,10 @@ export function SchedulePage() {
 
   // Фильтрация по одному человеку (клик на индикатор утилизации)
   const handleFilterByPerson = (personId: string) => {
-    setFilters(prev => ({
-      ...prev,
+    setFilters({
+      ...filters,
       people: [personId]
-    }))
+    })
   }
 
   // Открыть модальное окно редактирования проекта при клике
@@ -705,26 +708,28 @@ export function SchedulePage() {
         </div>
       </div>
 
-      {/* Main content (Plane.io style) */}
-      <div className="gantt-main vertical-scrollbar horizontal-scrollbar scrollbar-lg">
-        {/* Sidebar (people cards) */}
+      {/* Main content (Plane.io style - Single Scroll Container) */}
+      <div
+        id="gantt-container"
+        ref={ganttContainerRef}
+        className="gantt-main vertical-scrollbar horizontal-scrollbar scrollbar-lg"
+      >
+        {/* Sidebar (people cards) - Plane.io sticky pattern */}
         <div className="gantt-sidebar">
           <div className="gantt-sidebar-header">
             <span>Исполнитель</span>
           </div>
-          <div className="gantt-person-cards">
-            {teams.map(team =>
-              team.executors.map(executor => (
-                <PersonCard
-                  key={executor.id}
-                  executor={executor}
-                  team={team}
-                  onClick={() => handleOpenProjectModal(executor.id, new Date(2026, 0, 10), new Date(2026, 2, 10))}
-                  onUtilizationClick={() => handleFilterByPerson(executor.id)}
-                />
-              ))
-            )}
-          </div>
+          {filteredTeams.map(team =>
+            team.executors.map(executor => (
+              <PersonCardRow
+                key={executor.id}
+                executor={executor}
+                team={team}
+                onClick={() => handleOpenProjectModal(executor.id, new Date(2026, 0, 10), new Date(2026, 2, 10))}
+                onUtilizationClick={() => handleFilterByPerson(executor.id)}
+              />
+            ))
+          )}
         </div>
 
         {/* Timeline area (Plane.io style) */}
